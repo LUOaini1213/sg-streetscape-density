@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Pairwise perception survey: pre-registration-style protocol (draft v0.1)</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+<style>body{max-width:820px;margin:0 auto;padding:16px;font:16px/1.55 system-ui,sans-serif;
+background:#fafaf7;color:#1d1f1c}table{border-collapse:collapse}td,th{border-bottom:1px solid #ccc;padding:3px 8px}
+img{max-width:100%}@media (prefers-color-scheme: dark){body{background:#161815;color:#e8eae4}a{color:#7cc4a0}}</style></head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Pairwise perception survey: pre-registration-style
+protocol (draft v0.1)</h1>
+</header>
+<p><strong>Status: not run.</strong> No responses have been collected
+from anyone. Everything below that looks like a result comes from
+simulated respondents. The survey page in this repository is a
+demonstration that stores nothing and sends nothing. Independent
+personal project, not affiliated with the Singapore-ETH Centre or the
+NUS Urban Analytics Lab.</p>
+<h2 id="question">1. Question</h2>
+<p>At a given built density, do street scenes with more visible greenery
+(green view index, GVI) or more visible sky (sky view index, SVI)
+<em>feel</em> less crowded? If yes, greenery and sky openness are
+candidate design levers for “softening” density, which is what the
+street-level image analysis in this repository (README, Tier A and Tier
+B) can only show as association.</p>
+<h2 id="hypotheses-directional-stated-before-any-data">2. Hypotheses
+(directional, stated before any data)</h2>
+<ul>
+<li><strong>H1 (primary).</strong> Controlling for the scene’s density
+proxy, higher GVI raises the probability of a scene being chosen as
+“feels less crowded” (β_GVI &gt; 0 in the second-stage regression,
+one-sided α = 0.05 reported as two-sided p &lt; 0.05 with the predicted
+sign).</li>
+<li><strong>H2 (secondary).</strong> Controlling for density, higher SVI
+raises that probability (β_SVI &gt; 0).</li>
+<li><strong>H3 (secondary).</strong> Higher density proxy (log(1 + GFA
+intensity) of the scene’s 250 m cell) lowers it (β_density &lt; 0).</li>
+<li>Exploratory, not confirmatory: interactions GVI × density, and
+agreement of the human ranking with the Place Pulse-style perception
+predictions shipped in Global Streetscapes.</li>
+</ul>
+<h2 id="stimuli">3. Stimuli</h2>
+<ul>
+<li><!--n:n_stimuli-->
+40<!--/n--> scenes from the island-wide KartaView sample (CC BY-SA 4.0),
+only photos that KartaView’s own pipeline reports as face/plate-blurred,
+stratified into 4 density quartiles × 3 GVI tertiles so that GVI and
+density are not collinear in the stimulus set
+(<code>scripts/10_survey_design.py</code>,
+<code>docs/survey/stimuli.json</code>).</li>
+<li>GVI/SVI of each stimulus come from our Mask2Former re-segmentation,
+which reproduces the Global Streetscapes values on 477 overlapping
+images (README).</li>
+<li>Known limitations of the stimulus set: dashcam viewpoint (road, not
+pavement), mixed capture years (2015–2026), weather and time of day
+vary.</li>
+</ul>
+<h2 id="task-and-design">4. Task and design</h2>
+<ul>
+<li>Two-alternative forced choice: “Which street feels less
+crowded?”</li>
+<li>Each respondent sees 20 pairs: 19 random distinct pairs plus one
+repeated pair with sides swapped (within-respondent consistency check).
+Left/right position randomised.</li>
+<li>No identifying data: no names, e-mails or IP logging; optional
+coarse demographics (age band, years lived in Singapore, housing type)
+only in a real deployment, after ethics review.</li>
+</ul>
+<h2 id="sample-size-simulation-based-power">5. Sample size
+(simulation-based power)</h2>
+<p>Generative model for the simulation: latent utility of scene
+<em>i</em> = β·z(GVI_i) − 0.3·z(density_i) + u_i, with u_i ~ N(0, σ²)
+for scene-level appeal not explained by GVI or density (σ = 0.5 or 1.0),
+rater discrimination 1 + N(0, 0.3²), Bradley–Terry choice probabilities,
+200 simulated studies per cell. The analysis replicated in each
+simulated study is exactly the planned one (§6). The scene-level term
+u_i means that power is capped by the number of scenes, not only by the
+number of respondents.</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>scene-level SD</th>
+<th>β per SD of GVI</th>
+<th>25</th>
+<th>50</th>
+<th>100</th>
+<th>200 respondents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.5</td>
+<td>0 (false positives)</td>
+<td><!--n:power_e00_n25_s05-->1%<!--/n--></td>
+<td><!--n:power_e00_n50_s05-->4%<!--/n--></td>
+<td><!--n:power_e00_n100_s05-->1%<!--/n--></td>
+<td><!--n:power_e00_n200_s05-->2%<!--/n--></td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>0.10</td>
+<td><!--n:power_e10_n25_s05-->14%<!--/n--></td>
+<td><!--n:power_e10_n50_s05-->20%<!--/n--></td>
+<td><!--n:power_e10_n100_s05-->16%<!--/n--></td>
+<td><!--n:power_e10_n200_s05-->26%<!--/n--></td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>0.20</td>
+<td><!--n:power_e20_n25_s05-->45%<!--/n--></td>
+<td><!--n:power_e20_n50_s05-->54%<!--/n--></td>
+<td><!--n:power_e20_n100_s05-->57%<!--/n--></td>
+<td><!--n:power_e20_n200_s05-->66%<!--/n--></td>
+</tr>
+<tr>
+<td>0.5</td>
+<td>0.35</td>
+<td><!--n:power_e35_n25_s05-->86%<!--/n--></td>
+<td><!--n:power_e35_n50_s05-->96%<!--/n--></td>
+<td><!--n:power_e35_n100_s05-->95%<!--/n--></td>
+<td><!--n:power_e35_n200_s05-->99%<!--/n--></td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>0 (false positives)</td>
+<td><!--n:power_e00_n25_s10-->1%<!--/n--></td>
+<td><!--n:power_e00_n50_s10-->1%<!--/n--></td>
+<td><!--n:power_e00_n100_s10-->4%<!--/n--></td>
+<td><!--n:power_e00_n200_s10-->2%<!--/n--></td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>0.10</td>
+<td><!--n:power_e10_n25_s10-->6%<!--/n--></td>
+<td><!--n:power_e10_n50_s10-->8%<!--/n--></td>
+<td><!--n:power_e10_n100_s10-->10%<!--/n--></td>
+<td><!--n:power_e10_n200_s10-->4%<!--/n--></td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>0.20</td>
+<td><!--n:power_e20_n25_s10-->18%<!--/n--></td>
+<td><!--n:power_e20_n50_s10-->24%<!--/n--></td>
+<td><!--n:power_e20_n100_s10-->22%<!--/n--></td>
+<td><!--n:power_e20_n200_s10-->24%<!--/n--></td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>0.35</td>
+<td><!--n:power_e35_n25_s10-->52%<!--/n--></td>
+<td><!--n:power_e35_n50_s10-->58%<!--/n--></td>
+<td><!--n:power_e35_n100_s10-->49%<!--/n--></td>
+<td><!--n:power_e35_n200_s10-->51%<!--/n--></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What the table shows.</strong> Power barely grows beyond
+25–50 respondents. With 40 scenes, the scene-level term u_i, which every
+respondent shares, is the binding constraint, not respondent noise. A
+small effect (β = 0.1) is never reliably detectable with this stimulus
+set. At σ = 1.0, even β = 0.35 is roughly a coin flip.</p>
+<p><strong>Design decision (planned).</strong> The lever is the number
+of scenes.</p>
+<ul>
+<li>Before any confirmatory run, enlarge the stimulus set (each
+respondent still sees 20 random pairs from it) and re-run this
+simulation for the enlarged set. We have not yet simulated larger sets;
+that is the next step.</li>
+<li>A small pilot (about 20 respondents) would be used <em>only</em> to
+estimate σ, not to test H1–H3.</li>
+<li>The confirmatory sample size is then fixed in advance from the
+updated table, and the data are analysed once.</li>
+</ul>
+<h2 id="analysis-plan">6. Analysis plan</h2>
+<ol type="1">
+<li>Exclusions (decided now): respondents with median response time &lt;
+400 ms or who choose the same side in ≥ 18 of 20 pairs. The repeated
+pair is reported, not used for exclusion.</li>
+<li>Stage 1: Bradley–Terry scores per scene, pooled over respondents
+(Hunter’s MM algorithm with 0.5 virtual wins/losses against a reference,
+<code>ssd/pairwise.py</code>). TrueSkill scores computed as a robustness
+check.</li>
+<li>Stage 2: OLS of the 40 scene scores on z(GVI), z(SVI) and
+z(density). Inference at the scene level (n = 40), which is conservative
+with respect to the respondent count. H1 is supported if β_GVI &gt; 0
+with p &lt; 0.05.</li>
+<li>Robustness: (a) Bradley–Terry logit with scene covariates and a
+respondent random effect; (b) leave-one-planning-area-out on scenes;
+<ol start="3" type="a">
+<li>excluding scenes with rain or night lighting.</li>
+</ol></li>
+</ol>
+<h2 id="ethics">7. Ethics</h2>
+<ul>
+<li>A real deployment requires review by an institutional review board
+before any recruitment, an information sheet, and an explicit consent
+step. Adults only.</li>
+<li>Responses would be anonymous; only choice data and coarse optional
+demographics would be kept; no free text.</li>
+<li>Images: KartaView photos under CC BY-SA 4.0, credited per image;
+only photos the platform reports as blurred are shown. Scenes may still
+contain identifiable buildings and vehicles; respondents are not asked
+about people.</li>
+<li>The demo page in this repository does not collect or transmit
+anything.</li>
+</ul>
+</body>
+</html>

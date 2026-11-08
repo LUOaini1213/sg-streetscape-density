@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from shapely.geometry import box
 
-from ssd import agreement, density, grid, indices, pairwise, spatial
+from ssd import agreement, density, grid, indices, pairwise, sampling, spatial
 
 VISTAS = {0: "Bird", 6: "Wall", 17: "Building", 27: "Sky", 29: "Terrain", 30: "Vegetation",
           63: "Car Mount", 64: "Ego Vehicle"}
@@ -237,3 +237,38 @@ def test_registry_values_follow_outputs(tmp_path):
     reg = claims.registry(tmp_path)
     assert reg["agree_gvi_gs_vs_m2f_ccc"] == f"{ag['gvi']['gs_vs_m2f']['ccc']:.3f}"
     assert reg["agree_svi_gs_vs_segf_mae"] == f"{ag['svi']['gs_vs_segf']['mae']:.3f}"
+
+
+# ------------------------------------------------------------------ sampling
+def test_random_prefix_stops_at_first_gap_and_is_seeded():
+    ids = [f"id{k:03d}" for k in range(50)]
+    order = sampling.random_prefix(ids, set(ids), seed=3)
+    assert len(order) == 50 and order != sorted(ids)
+    assert sampling.random_prefix(ids, set(ids), seed=3) == order
+    done = set(order[:10]) | set(order[11:30])      # gap at position 10
+    assert sampling.random_prefix(ids, done, seed=3) == order[:10]
+    assert sampling.random_prefix(list(reversed(ids)), done, seed=3) == order[:10]
+
+
+# ------------------------------------------------------------------ added after mutation run
+def test_bland_altman_limits_and_mae_use_absolute_differences():
+    a = np.array([1.0, 2.0, 3.0, 4.0])
+    b = np.array([2.0, 1.0, 4.0, 3.0])          # differences -1, +1, -1, +1
+    r = agreement.agreement(a, b)
+    sd = np.std(a - b, ddof=1)
+    assert r["bias"] == pytest.approx(0.0)
+    assert r["mae"] == pytest.approx(1.0)
+    assert r["loa_high"] == pytest.approx(1.96 * sd)
+    assert r["loa_low"] == pytest.approx(-1.96 * sd)
+
+
+def test_cv_r2_does_not_train_on_test_fold():
+    rng = np.random.default_rng(4)
+    X = rng.normal(size=(120, 1))
+    y = rng.normal(size=120)                    # no signal at all
+    folds = np.arange(120) % 4
+
+    def nearest_neighbour(Xtr, ytr, Xte):      # memorises its training rows
+        d = np.abs(Xte[:, None, 0] - Xtr[None, :, 0])
+        return ytr[d.argmin(1)]
+    assert spatial.cv_r2(X, y, folds, nearest_neighbour) < 0.2

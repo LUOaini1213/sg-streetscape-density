@@ -5,6 +5,9 @@ Models (Hugging Face, used for inference only, weights not redistributed):
        same label set as Global Streetscapes' own segmentation)
   segf nvidia/segformer-b2-finetuned-cityscapes-1024-1024 (19 Cityscapes classes;
        an independent architecture + training set, for a model-sensitivity check)
+Loading m2f reports the Swin backbone's final layernorm as newly initialised;
+Mask2Former does not use that layer (its pixel decoder reads per-stage
+normalised features), and the agreement check confirms the outputs.
 GPU: fp16 on a 4 GB GTX 1650, batch size 1; images are the 1280x720 KartaView
 large thumbnails. Writes one CSV row per image with GVI / SVI / building share.
 """
@@ -56,13 +59,17 @@ def main() -> None:
     ap.add_argument("imgdir")
     ap.add_argument("out")
     ap.add_argument("--limit", type=int, default=0)
-    ap.add_argument("--save-masks", default="", help="optional dir for a few PNG label maps")
+    ap.add_argument("--save-masks", default="", help="optional dir for a few .npy label maps")
+    ap.add_argument("--order-seed", type=int, default=None,
+                    help="process images in a seeded random order (so a partial run is a random subset)")
     a = ap.parse_args()
     device = "cuda" if torch.cuda.is_available() else "cpu"
     proc, model = load(a.model, device)
     id2label = model.config.id2label
     cats = category_ids(id2label)
     files = sorted(Path(a.imgdir).glob("*.jpg"))
+    if a.order_seed is not None:
+        files = [files[i] for i in np.random.default_rng(a.order_seed).permutation(len(files))]
     if a.limit:
         files = files[: a.limit]
     done = set()

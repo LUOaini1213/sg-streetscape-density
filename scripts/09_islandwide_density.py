@@ -1,5 +1,7 @@
 """Tier B: island-wide KartaView sample segmented by us (Mask2Former, Vistas).
 
+Analysis set = the fully segmented prefix of a seeded random order over the
+downloaded images (a simple random subsample; see ssd.sampling.random_prefix).
 At most 2 images per 250 m cell, so inference is at image level with
 cluster-robust SEs (clusters = 2 km blocks, which also absorbs short-range
 spatial dependence) plus cell-level OLS compared by 2 km blocked CV.
@@ -12,14 +14,20 @@ import pandas as pd
 import statsmodels.formula.api as smf
 
 from ssd.models import cv_compare, ols_clustered, ols_with_moran
+from ssd.sampling import random_prefix
 from scripts.scripts_common import density_table
 
 OUTCOMES = ["gvi", "svi", "building_share"]
+ORDER_SEED = 2026   # must match `06_segment.py --order-seed` used for the island run
 
 
 def main() -> None:
     meta = pd.read_csv("data/derived/kv_islandwide_sample.csv", dtype={"kv_id": str})
     seg = pd.read_csv("data/seg/island_m2f.csv", dtype={"image_id": str}).drop_duplicates("image_id")
+    downloaded = [f.stem for f in Path("data/images/island").glob("*.jpg")]
+    keep = random_prefix(downloaded, set(seg.image_id), ORDER_SEED)
+    n_seg_total = int(seg.image_id.isin(downloaded).sum())
+    seg = seg[seg.image_id.isin(set(keep))]
     df = meta.merge(seg, left_on="kv_id", right_on="image_id")
     df["year"] = pd.to_datetime(df.shotDate).dt.year
     cache = Path("data/derived/island_density.parquet")
@@ -32,7 +40,7 @@ def main() -> None:
     df["log_gfa"] = np.log1p(df.gfa_intensity)
     df["yr"] = df.year - 2020
     ctrl = "park_share + res_share + road_share_lu + yr"
-    res = {"n_images": int(len(df)), "n_cells": int(df.cell.nunique()), "n_blocks": int(df.block.nunique()),
+    res = {"n_downloaded": len(downloaded), "n_segmented_total": n_seg_total, "n_images": int(len(df)), "n_cells": int(df.cell.nunique()), "n_blocks": int(df.block.nunique()),
            "n_planning_areas": int(df.PLN_AREA_N.nunique()), "image_level": {}, "cv": {}, "cell_ols": {}}
     for y in OUTCOMES:
         res["image_level"][y] = {
@@ -58,9 +66,9 @@ def main() -> None:
     res["softened"] = {"gfa_q75": float(q75), "n_high_density": int(len(hi)), "n_candidates": int(len(soft)),
                        "top_planning_areas": soft.head(10).PLN_AREA_N.value_counts().to_dict()}
     cells.reset_index().to_csv("outputs/island_cells.csv", index=False, float_format="%.5g")
-    soft.reset_index().head(25)[["cell", "PLN_AREA_N", "gfa_intensity", "gvi", "svi", "building_share",
+    soft.reset_index()[["cell", "PLN_AREA_N", "gfa_intensity", "gvi", "svi", "building_share",
                                  "gvi_resid", "cx", "cy"]].to_csv("outputs/softened_candidates.csv",
-                                                                   index=False, float_format="%.4g")
+                                                                   index=False, float_format="%.5g")
     df[["kv_id", "sequenceId", "cell", "PLN_AREA_N", "lat", "lon", "shotDate", "gvi", "svi",
         "building_share"]].to_csv("outputs/island_images.csv", index=False, float_format="%.5f")
     Path("outputs/island_models.json").write_text(json.dumps(res, indent=2, default=float))

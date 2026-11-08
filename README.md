@@ -119,19 +119,28 @@ source, side view, major road and year.
 
 **Tier B: island-wide** (our Mask2Former values on
 <!--n:isl_images-->2,580<!--/n--> KartaView photos in
-<!--n:isl_cells-->1,874<!--/n--> cells across
-<!--n:isl_pas-->53<!--/n--> planning areas). The photos were sampled from
-<!--n:isl_api_photos-->12,804<!--/n--> API results: 08:00–17:59 local time,
-2015 or later, non-panoramic, at most 2 per cell from distinct sequences. The
-models are image-level OLS with SEs clustered by 2 km block
-(<!--n:isl_blocks-->0<!--/n--> blocks). The adjusted model adds HDB footprint
+<!--n:isl_cells-->1,868<!--/n--> cells across
+<!--n:isl_pas-->53<!--/n--> planning areas).
+
+* The candidate photos were sampled from
+  <!--n:isl_api_photos-->12,804<!--/n--> API results: 08:00–17:59 local time,
+  2015 or later, non-panoramic, at most 2 per cell from distinct sequences.
+  <!--n:isl_downloaded-->2,580<!--/n--> of them were downloaded.
+* All downloaded photos were segmented on the shared GTX 1650.
+  The run used a seeded random processing order, so that a run stopped early
+  would still leave a simple random subsample; the analysis keeps only the
+  fully processed prefix of that order (`ssd/sampling.py`), which here is the
+  whole set.
+
+The models are image-level OLS with SEs clustered by 2 km block
+(<!--n:isl_blocks-->168<!--/n--> blocks). The adjusted model adds HDB footprint
 coverage, park, residential and road land shares, and year.
 
 | outcome | density only | adjusted |
 |---|---|---|
-| GVI | <!--n:isl_gvi_density_only_b-->+0.000<!--/n--> <!--n:isl_gvi_density_only_ci-->[+0.000, +0.000]<!--/n--> | <!--n:isl_gvi_adjusted_b-->+0.000<!--/n--> <!--n:isl_gvi_adjusted_ci-->[+0.000, +0.000]<!--/n--> |
-| SVI | <!--n:isl_svi_density_only_b-->+0.000<!--/n--> <!--n:isl_svi_density_only_ci-->[+0.000, +0.000]<!--/n--> | <!--n:isl_svi_adjusted_b-->+0.000<!--/n--> <!--n:isl_svi_adjusted_ci-->[+0.000, +0.000]<!--/n--> |
-| Building share | <!--n:isl_building_share_density_only_b-->+0.000<!--/n--> <!--n:isl_building_share_density_only_ci-->[+0.000, +0.000]<!--/n--> | <!--n:isl_building_share_adjusted_b-->+0.000<!--/n--> <!--n:isl_building_share_adjusted_ci-->[+0.000, +0.000]<!--/n--> |
+| GVI | <!--n:isl_gvi_density_only_b-->-0.064<!--/n--> <!--n:isl_gvi_density_only_ci-->[-0.090, -0.038]<!--/n--> | <!--n:isl_gvi_adjusted_b-->-0.060<!--/n--> <!--n:isl_gvi_adjusted_ci-->[-0.088, -0.032]<!--/n--> |
+| SVI | <!--n:isl_svi_density_only_b-->-0.046<!--/n--> <!--n:isl_svi_density_only_ci-->[-0.072, -0.020]<!--/n--> | <!--n:isl_svi_adjusted_b-->-0.015<!--/n--> <!--n:isl_svi_adjusted_ci-->[-0.052, +0.022]<!--/n--> |
+| Building share | <!--n:isl_building_share_density_only_b-->+0.104<!--/n--> <!--n:isl_building_share_density_only_ci-->[+0.082, +0.127]<!--/n--> | <!--n:isl_building_share_adjusted_b-->+0.068<!--/n--> <!--n:isl_building_share_adjusted_ci-->[+0.040, +0.096]<!--/n--> |
 
 **Out-of-sample check (spatially blocked 5-fold CV, R², mean of 10 fold
 assignments).** Whole blocks are held out: 500 m blocks for Tier A
@@ -139,19 +148,26 @@ assignments).** Whole blocks are held out: 500 m blocks for Tier A
 
 | outcome | A: density | A: controls | A: both | B: density | B: controls | B: both |
 |---|---|---|---|---|---|---|
-| GVI | <!--n:win_gvi_cv_density-->0.13<!--/n--> | <!--n:win_gvi_cv_controls-->0.37<!--/n--> | <!--n:win_gvi_cv_density_controls-->0.37<!--/n--> | <!--n:isl_gvi_cv_density-->0.00<!--/n--> | <!--n:isl_gvi_cv_controls-->0.00<!--/n--> | <!--n:isl_gvi_cv_density_controls-->0.00<!--/n--> |
-| SVI | <!--n:win_svi_cv_density-->-0.07<!--/n--> | <!--n:win_svi_cv_controls-->0.12<!--/n--> | <!--n:win_svi_cv_density_controls-->0.09<!--/n--> | <!--n:isl_svi_cv_density-->0.00<!--/n--> | <!--n:isl_svi_cv_controls-->0.00<!--/n--> | <!--n:isl_svi_cv_density_controls-->0.00<!--/n--> |
-| Building share | <!--n:win_building_share_cv_density-->0.28<!--/n--> | <!--n:win_building_share_cv_controls-->0.32<!--/n--> | <!--n:win_building_share_cv_density_controls-->0.39<!--/n--> | <!--n:isl_building_share_cv_density-->0.00<!--/n--> | <!--n:isl_building_share_cv_controls-->0.00<!--/n--> | <!--n:isl_building_share_cv_density_controls-->0.00<!--/n--> |
+| GVI | <!--n:win_gvi_cv_density-->0.13<!--/n--> | <!--n:win_gvi_cv_controls-->0.37<!--/n--> | <!--n:win_gvi_cv_density_controls-->0.37<!--/n--> | <!--n:isl_gvi_cv_density-->0.01<!--/n--> | <!--n:isl_gvi_cv_controls-->0.01<!--/n--> | <!--n:isl_gvi_cv_density_controls-->0.04<!--/n--> |
+| SVI | <!--n:win_svi_cv_density-->-0.07<!--/n--> | <!--n:win_svi_cv_controls-->0.12<!--/n--> | <!--n:win_svi_cv_density_controls-->0.09<!--/n--> | <!--n:isl_svi_cv_density-->0.04<!--/n--> | <!--n:isl_svi_cv_controls-->0.09<!--/n--> | <!--n:isl_svi_cv_density_controls-->0.09<!--/n--> |
+| Building share | <!--n:win_building_share_cv_density-->0.28<!--/n--> | <!--n:win_building_share_cv_controls-->0.32<!--/n--> | <!--n:win_building_share_cv_density_controls-->0.39<!--/n--> | <!--n:isl_building_share_cv_density-->0.11<!--/n--> | <!--n:isl_building_share_cv_controls-->0.07<!--/n--> | <!--n:isl_building_share_cv_density_controls-->0.12<!--/n--> |
 
 ![density vs GVI](figures/density_gvi.png)
 
 What the density results say, and where confounding enters:
 
-* **Building share rises with planned density** in both tiers. GVI falls with
-  density in the Tier A mixed model.
+* **Building share rises with planned density** in both tiers. **GVI falls
+  with density** in the Tier A mixed model and in the Tier B adjusted model.
+  SVI shows no adjusted association in either tier.
+* **The associations are clear but explain little.** In Tier B, cell means
+  rest on one or two photos. Held-out R² for density alone is
+  <!--n:isl_building_share_cv_density-->0.11<!--/n--> for building share and
+  <!--n:isl_gvi_cv_density-->0.01<!--/n--> for GVI, so density is a weak
+  predictor of any single street view even where the slope is
+  well-estimated.
 * **Park land is the main confounder.** The density proxy and park/open-space
   share correlate at r = <!--n:win_corr_park-->-0.69<!--/n--> (Tier A) and
-  <!--n:isl_corr_park-->0.00<!--/n--> (Tier B). Park cells carry no GPR, so
+  <!--n:isl_corr_park-->-0.43<!--/n--> (Tier B). Park cells carry no GPR, so
   "density" and "greenery" are partly the same map read twice. That is why
   the controls do most of the out-of-sample work in Tier A.
 * **How images are weighted changes the GVI result.** The Tier A mixed model
@@ -161,13 +177,15 @@ What the density results say, and where confounding enters:
 * **Sampling is not random.** Images come from volunteers' dashcams and
   phones, concentrated on main roads and in a few years. Source, platform and
   year are adjusted for, but the selection itself cannot be adjusted away.
-* **Spatial dependence remains.** Residual Moran's I of the Tier A
-  cell-level OLS (k = 6 nearest cells) is
-  <!--n:win_gvi_moran-->-0.02<!--/n--> for GVI and
-  <!--n:win_svi_moran-->0.22<!--/n--> for SVI
-  (permutation p = <!--n:win_svi_moran_p-->0.002<!--/n-->). The SVI model
-  still has unexplained spatial structure, such as street orientation and
-  canopy over particular roads.
+* **Spatial dependence remains.** Residual Moran's I of the cell-level OLS
+  (k = 6 nearest cells) is <!--n:win_gvi_moran-->-0.02<!--/n--> (GVI) and
+  <!--n:win_svi_moran-->0.22<!--/n--> (SVI, permutation
+  p = <!--n:win_svi_moran_p-->0.002<!--/n-->) in Tier A, and
+  <!--n:isl_gvi_moran-->0.12<!--/n--> (GVI) and
+  <!--n:isl_svi_moran-->0.15<!--/n--> (SVI) in Tier B. Unmodelled spatial
+  structure, such as street orientation and canopy over particular roads,
+  is why Tier B SEs are clustered by 2 km block and CV holds out whole
+  blocks.
 * **GPR is planned, not built.** The Master Plan GPR is a permissible
   maximum, so it overstates built intensity where sites are under-built.
 
@@ -179,12 +197,13 @@ the high-density median.
 
 * Tier A: <!--n:win_soft_n-->15<!--/n--> of <!--n:win_soft_hi-->28<!--/n-->
   high-density cells qualify.
-* Tier B: <!--n:isl_soft_n-->0<!--/n--> of <!--n:isl_soft_hi-->0<!--/n-->
+* Tier B: <!--n:isl_soft_n-->110<!--/n--> of <!--n:isl_soft_hi-->467<!--/n-->
   high-density cells qualify (`outputs/softened_candidates.csv`, ringed dots
   on the Pages map).
 
 These are leads for precedent studies to inspect by eye, not established
-precedents.
+precedents. A Tier B candidate rests on one or two photos and can simply be a
+view across a park edge.
 
 ### 3. Survey instrument (not run)
 
@@ -202,18 +221,25 @@ precedents.
 
 | scene-level SD | β per SD of GVI | 25 | 50 | 100 | 200 respondents |
 |---|---|---|---|---|---|
-| 0.5 | 0 (false positives) | <!--n:power_e00_n25_s05-->0%<!--/n--> | <!--n:power_e00_n50_s05-->0%<!--/n--> | <!--n:power_e00_n100_s05-->0%<!--/n--> | <!--n:power_e00_n200_s05-->0%<!--/n--> |
-| 0.5 | 0.10 | <!--n:power_e10_n25_s05-->0%<!--/n--> | <!--n:power_e10_n50_s05-->0%<!--/n--> | <!--n:power_e10_n100_s05-->0%<!--/n--> | <!--n:power_e10_n200_s05-->0%<!--/n--> |
-| 0.5 | 0.20 | <!--n:power_e20_n25_s05-->0%<!--/n--> | <!--n:power_e20_n50_s05-->0%<!--/n--> | <!--n:power_e20_n100_s05-->0%<!--/n--> | <!--n:power_e20_n200_s05-->0%<!--/n--> |
-| 0.5 | 0.35 | <!--n:power_e35_n25_s05-->0%<!--/n--> | <!--n:power_e35_n50_s05-->0%<!--/n--> | <!--n:power_e35_n100_s05-->0%<!--/n--> | <!--n:power_e35_n200_s05-->0%<!--/n--> |
-| 1.0 | 0 (false positives) | <!--n:power_e00_n25_s10-->0%<!--/n--> | <!--n:power_e00_n50_s10-->0%<!--/n--> | <!--n:power_e00_n100_s10-->0%<!--/n--> | <!--n:power_e00_n200_s10-->0%<!--/n--> |
-| 1.0 | 0.10 | <!--n:power_e10_n25_s10-->0%<!--/n--> | <!--n:power_e10_n50_s10-->0%<!--/n--> | <!--n:power_e10_n100_s10-->0%<!--/n--> | <!--n:power_e10_n200_s10-->0%<!--/n--> |
-| 1.0 | 0.20 | <!--n:power_e20_n25_s10-->0%<!--/n--> | <!--n:power_e20_n50_s10-->0%<!--/n--> | <!--n:power_e20_n100_s10-->0%<!--/n--> | <!--n:power_e20_n200_s10-->0%<!--/n--> |
-| 1.0 | 0.35 | <!--n:power_e35_n25_s10-->0%<!--/n--> | <!--n:power_e35_n50_s10-->0%<!--/n--> | <!--n:power_e35_n100_s10-->0%<!--/n--> | <!--n:power_e35_n200_s10-->0%<!--/n--> |
+| 0.5 | 0 (false positives) | <!--n:power_e00_n25_s05-->1%<!--/n--> | <!--n:power_e00_n50_s05-->4%<!--/n--> | <!--n:power_e00_n100_s05-->1%<!--/n--> | <!--n:power_e00_n200_s05-->2%<!--/n--> |
+| 0.5 | 0.10 | <!--n:power_e10_n25_s05-->14%<!--/n--> | <!--n:power_e10_n50_s05-->20%<!--/n--> | <!--n:power_e10_n100_s05-->16%<!--/n--> | <!--n:power_e10_n200_s05-->26%<!--/n--> |
+| 0.5 | 0.20 | <!--n:power_e20_n25_s05-->45%<!--/n--> | <!--n:power_e20_n50_s05-->54%<!--/n--> | <!--n:power_e20_n100_s05-->57%<!--/n--> | <!--n:power_e20_n200_s05-->66%<!--/n--> |
+| 0.5 | 0.35 | <!--n:power_e35_n25_s05-->86%<!--/n--> | <!--n:power_e35_n50_s05-->96%<!--/n--> | <!--n:power_e35_n100_s05-->95%<!--/n--> | <!--n:power_e35_n200_s05-->99%<!--/n--> |
+| 1.0 | 0 (false positives) | <!--n:power_e00_n25_s10-->1%<!--/n--> | <!--n:power_e00_n50_s10-->1%<!--/n--> | <!--n:power_e00_n100_s10-->4%<!--/n--> | <!--n:power_e00_n200_s10-->2%<!--/n--> |
+| 1.0 | 0.10 | <!--n:power_e10_n25_s10-->6%<!--/n--> | <!--n:power_e10_n50_s10-->8%<!--/n--> | <!--n:power_e10_n100_s10-->10%<!--/n--> | <!--n:power_e10_n200_s10-->4%<!--/n--> |
+| 1.0 | 0.20 | <!--n:power_e20_n25_s10-->18%<!--/n--> | <!--n:power_e20_n50_s10-->24%<!--/n--> | <!--n:power_e20_n100_s10-->22%<!--/n--> | <!--n:power_e20_n200_s10-->24%<!--/n--> |
+| 1.0 | 0.35 | <!--n:power_e35_n25_s10-->52%<!--/n--> | <!--n:power_e35_n50_s10-->58%<!--/n--> | <!--n:power_e35_n100_s10-->49%<!--/n--> | <!--n:power_e35_n200_s10-->51%<!--/n--> |
 
 ![power](figures/power.png)
 
-Hypotheses, exclusions, stopping rule and the ethics note are in
+Power barely grows with respondents. The 40 scenes' own unexplained appeal,
+which every respondent shares, is the binding constraint. For example, at
+scene-level SD 1.0, β = 0.35 is detected only
+<!--n:power_e35_n100_s10-->49%<!--/n--> of the time with 100 respondents. The
+protocol therefore plans to enlarge the stimulus set (and re-simulate)
+before any confirmatory run, rather than to recruit more respondents.
+
+Hypotheses, exclusions, the design decision and the ethics note are in
 [`docs/protocol.md`](docs/protocol.md).
 
 ## Reproduce

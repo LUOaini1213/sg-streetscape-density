@@ -43,7 +43,7 @@ def density_fig():
                         (axs[1], isl, "gvi", "B. Island-wide (our Mask2Former GVI)")]:
         sc = ax.scatter(np.log1p(d.gfa_intensity), d[y], c=d.park_share, cmap="Greens", s=10, vmin=0, vmax=1,
                         edgecolors=MUTED, linewidths=.2)
-        ax.set_xlabel("log(1 + GFA intensity)  [URA MP2019 GPR x parcel area / cell area]")
+        ax.set_xlabel("log(1 + GFA intensity)")
         ax.set_title(t, fontsize=9)
     axs[0].set_ylabel("Green view index (250 m cell mean)")
     cb = fig.colorbar(sc, ax=axs, shrink=.8)
@@ -66,8 +66,9 @@ def power_fig():
         ax.set_xlabel("respondents (20 pairs each)")
         ax.set_title(f"{p['n_stimuli']} scenes, scene-level SD {sd}", fontsize=9)
     axs[0].set_ylabel("simulated power")
-    axs[0].legend(frameon=False, fontsize=7)
-    fig.tight_layout()
+    h, lab = axs[0].get_legend_handles_labels()
+    fig.legend(h, lab, frameon=False, fontsize=7, ncol=4, loc="lower center")
+    fig.tight_layout(rect=(0, 0.07, 1, 1))
     fig.savefig(FIG / "power.png", dpi=150)
 
 

@@ -1,0 +1,254 @@
+<!doctype html><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Street-level greenery, sky and built density in Singapore: a reproducible baseline and a perception-survey design</title><style>body{max-width:820px;margin:0 auto;padding:16px;font:16px/1.55 system-ui,sans-serif;
+background:#fafaf7;color:#1d1f1c}table{border-collapse:collapse}td,th{border-bottom:1px solid #ccc;padding:3px 8px}
+img{max-width:100%}@media (prefers-color-scheme: dark){body{background:#161815;color:#e8eae4}a{color:#7cc4a0}}</style><h1>Street-level greenery, sky and built density in Singapore: a reproducible baseline and a perception-survey design</h1><p class='author'>Wenjie Luo (independent personal project; not affiliated with the Singapore-ETH Centre or NUS Urban Analytics Lab) &middot; November 2026 (working paper, not peer reviewed)</p><h2 id="abstract">Abstract</h2>
+<p>We ask how street-level visual features vary with built density in
+Singapore, and how one would test whether greenery makes density feel
+less crowded.</p>
+<ul>
+<li><strong>Reproduction.</strong> We re-segmented
+<!--n:agree_n-->477<!--/n--> KartaView images from the open Global
+Streetscapes dataset with Mask2Former (Mapillary Vistas). The provided
+green view index (GVI) was reproduced with Lin’s CCC
+<!--n:agree_gvi_gs_vs_m2f_ccc-->0.993<!--/n--> and the sky view index
+(SVI) with <!--n:agree_svi_gs_vs_m2f_ccc-->0.999<!--/n-->.</li>
+<li><strong>Model sensitivity.</strong> A SegFormer/Cityscapes model
+agrees on GVI and SVI but less so on building share (CCC
+<!--n:agree_building_share_gs_vs_segf_ccc-->0.863<!--/n-->).</li>
+<li><strong>Coverage.</strong> Global Streetscapes covers only a ~2.4 km
+window of Singapore. We therefore also segmented an island-wide sample
+of <!--n:isl_images-->2,580<!--/n--> public KartaView photos.</li>
+<li><strong>Density link.</strong> Planned floor-area intensity from the
+URA Master Plan 2019 is associated with more building façade in view and
+with less greenery. The adjusted GVI slope per unit log intensity is
+<!--n:win_gvi_adjusted_b-->-0.080<!--/n--> in the dataset window (mixed
+model) and <!--n:isl_gvi_adjusted_b-->-0.060<!--/n--> island-wide. Park
+land confounds this strongly, the window result depends on how images
+are weighted, and density explains little held-out variance.</li>
+<li><strong>Survey design.</strong> We specify a pairwise-comparison
+survey with Bradley–Terry scoring and a simulated power analysis. No
+responses have been collected.</li>
+</ul>
+<h2 id="introduction">1. Introduction</h2>
+<p>High-density housing is central to Singapore’s land-use strategy.
+Whether it <em>feels</em> dense depends partly on what people see at
+street level: trees, sky, façades. Street-view imagery with semantic
+segmentation has become the standard way to measure that view at scale
+(e.g. GVI and SVI). Large open datasets such as Global Streetscapes (Hou
+et al., 2024) now ship these measures pre-computed.</p>
+<p>Before such measures are linked to density or used to pick survey
+stimuli, three questions matter. Can we reproduce them? How sensitive
+are they to the model? How do they relate to density once obvious
+confounders are handled? This note answers the first two directly. It
+gives a cautious, confounder-aware answer to the third. For the
+perceptual question that images alone cannot answer, it designs (but
+does not run) a survey.</p>
+<h2 id="data">2. Data</h2>
+<p><strong>Global Streetscapes.</strong> We retrieved all Singapore rows
+from the Hugging Face release (CC BY-SA 4.0) with DuckDB HTTP range
+reads: segmentation pixel counts, GVI/SVI, contextual labels, perception
+predictions and OSM road attributes. There are
+<!--n:gs_sg_images-->22,327<!--/n--> images. All of them lie within ~2.4
+km of the city reference point, covering parts of Tanglin, Queenstown
+and Bukit Timah. Mapillary images need a token and were not downloaded.
+KartaView images are public.</p>
+<p><strong>Island-wide KartaView sample.</strong> We queried the public
+KartaView API on a 1 km hexagonal lattice with a 500 m search radius.
+That returned <!--n:isl_api_photos-->12,804<!--/n--> unique photos. We
+kept those taken 08:00–17:59 local time, in 2015 or later, and
+non-panoramic, then took at most two per 250 m cell from distinct
+sequences, and downloaded <!--n:isl_downloaded-->2,580<!--/n-->, all of
+which were segmented (<!--n:isl_images-->2,580<!--/n--> photos in
+<!--n:isl_cells-->1,868<!--/n--> cells and <!--n:isl_pas-->53<!--/n-->
+planning areas).</p>
+<p><strong>Density proxies</strong> come from data.gov.sg under the
+Singapore Open Data Licence:</p>
+<ul>
+<li>URA Master Plan 2019 Land Use, with parcel GPR and land-use
+class;</li>
+<li>HDB Existing Building footprints.</li>
+</ul>
+<p>We did not use OSM footprints, to avoid mixing ODbL and CC BY-SA in
+redistributed derived tables.</p>
+<h2 id="methods">3. Methods</h2>
+<p><strong>Segmentation.</strong> We ran inference only, on 1280×720
+thumbnails in fp16 (GTX 1650, 4 GB). Two models were used:
+<code>mask2former-swin-large-mapillary-vistas-semantic</code> (65
+classes, identical to the dataset’s label set) and
+<code>segformer-b2-finetuned-cityscapes</code> (19 classes). GVI =
+vegetation / all pixels and SVI = sky / all pixels, following the
+dataset’s definition (its denominator includes ego-vehicle pixels).
+Building share = (building + wall) / all pixels. Agreement is summarised
+with Pearson’s r, Lin’s concordance correlation coefficient (CCC), mean
+absolute error and Bland–Altman limits.</p>
+<p><strong>Spatial unit and density.</strong> We used a 250 m square
+grid in SVY21. The GFA intensity of a cell is Σ(GPR × parcel area) /
+cell area. Landed-housing parcels (“LND”, which have no numeric GPR) are
+assigned 1.4; a sensitivity run excludes them. Parcels with GPR “EVA” or
+“SDP”, parks and roads contribute zero. Covariates: park/open-space,
+residential and road land shares, and HDB footprint coverage.</p>
+<p><strong>Models.</strong></p>
+<ul>
+<li><em>Tier A</em> (dataset window, provided attributes): image-level
+linear mixed models with a random intercept per cell. Fixed effects are
+log(1 + GFA intensity), land-use shares and image covariates: walking vs
+driving platform, source, side view, major road and year. Robustness
+checks are image-level OLS with cell-clustered SEs and the no-landed
+variant.</li>
+<li><em>Tier B</em> (island-wide, our values): image-level OLS with SEs
+clustered by 2 km block.</li>
+<li><em>Both tiers:</em> cell-level OLS feature sets were compared by
+spatially blocked 5-fold CV (whole 500 m or 2 km blocks held out, 10
+fold assignments). We report residual Moran’s I on 6-nearest-neighbour
+weights with permutation p-values.</li>
+</ul>
+<p><strong>Survey instrument.</strong> A static web page shows two
+scenes and asks which “feels less crowded”. The stimuli are
+<!--n:n_stimuli-->40<!--/n--> face/plate-blurred scenes stratified by
+density quartile × GVI tertile. Each respondent gets 20 trials,
+including one swapped repeat. The planned analysis has two stages:</p>
+<ol type="1">
+<li>Bradley–Terry scores (Hunter’s MM algorithm with a weak prior), with
+TrueSkill as a check.</li>
+<li>OLS of the scene scores on z(GVI) and z(density), with inference at
+the scene level.</li>
+</ol>
+<p>Power was estimated by simulating that exact pipeline under the
+pre-registered generative model.</p>
+<h2 id="results">4. Results</h2>
+<p><strong>Reproduction and model sensitivity.</strong> Against the
+dataset values, our Mask2Former run gives CCC
+<!--n:agree_gvi_gs_vs_m2f_ccc-->0.993<!--/n--> for GVI (MAE
+<!--n:agree_gvi_gs_vs_m2f_mae-->0.012<!--/n-->),
+<!--n:agree_svi_gs_vs_m2f_ccc-->0.999<!--/n--> for SVI and
+<!--n:agree_building_share_gs_vs_m2f_ccc-->0.973<!--/n--> for building
+share. SegFormer gives <!--n:agree_gvi_gs_vs_segf_ccc-->0.981<!--/n-->,
+<!--n:agree_svi_gs_vs_segf_ccc-->0.991<!--/n--> and
+<!--n:agree_building_share_gs_vs_segf_ccc-->0.863<!--/n--> respectively,
+with a building-share bias of
+<!--n:agree_building_share_gs_vs_segf_bias-->+0.027<!--/n-->. GVI and
+SVI are therefore robust to model choice. Building share is
+model-specific and should not be pooled across models.</p>
+<figure>
+<img src="figures/agreement.png"
+alt="Agreement between provided and re-computed indices (477 images)." />
+<figcaption aria-hidden="true">Agreement between provided and
+re-computed indices (477 images).</figcaption>
+</figure>
+<p><strong>Density, Tier A</strong>
+(<!--n:win_images_used-->22,104<!--/n--> images,
+<!--n:win_cells-->110<!--/n--> cells).</p>
+<ul>
+<li><em>Building share.</em> The adjusted mixed-model slope on log(1 +
+GFA intensity) is <!--n:win_building_share_adjusted_b-->+0.063<!--/n-->
+<!--n:win_building_share_adjusted_ci-->[+0.033, +0.092]<!--/n-->.</li>
+<li><em>GVI.</em> The slope is
+<!--n:win_gvi_adjusted_b-->-0.080<!--/n-->
+<!--n:win_gvi_adjusted_ci-->[-0.139, -0.021]<!--/n-->. It weakens to
+<!--n:win_gvi_adjusted_ols_clustered_b-->-0.009<!--/n-->
+<!--n:win_gvi_adjusted_ols_clustered_ci-->[-0.089, +0.071]<!--/n--> when
+images rather than cells carry equal weight. The negative GVI
+association is thus driven by between-cell contrasts and is not robust
+to the weighting.</li>
+<li><em>SVI.</em> No association:
+<!--n:win_svi_adjusted_b-->-0.012<!--/n-->
+<!--n:win_svi_adjusted_ci-->[-0.045, +0.021]<!--/n-->.</li>
+<li><em>Out of sample.</em> Density alone explains
+<!--n:win_building_share_cv_density-->0.28<!--/n--> of held-out variance
+in building share but only <!--n:win_gvi_cv_density-->0.13<!--/n--> in
+GVI. Land-use and image controls raise GVI to
+<!--n:win_gvi_cv_density_controls-->0.37<!--/n-->.</li>
+<li><em>Park confounding.</em> Density and park share correlate at r =
+<!--n:win_corr_park-->-0.69<!--/n-->.</li>
+</ul>
+<p><strong>Density, Tier B</strong> (<!--n:isl_images-->2,580<!--/n-->
+images). The adjusted slopes are
+<!--n:isl_building_share_adjusted_b-->+0.068<!--/n-->
+<!--n:isl_building_share_adjusted_ci-->[+0.040, +0.096]<!--/n--> for
+building share, <!--n:isl_gvi_adjusted_b-->-0.060<!--/n-->
+<!--n:isl_gvi_adjusted_ci-->[-0.088, -0.032]<!--/n--> for GVI and
+<!--n:isl_svi_adjusted_b-->-0.015<!--/n-->
+<!--n:isl_svi_adjusted_ci-->[-0.052, +0.022]<!--/n--> for SVI. In
+blocked CV, density alone reaches R²
+<!--n:isl_building_share_cv_density-->0.11<!--/n--> for building share
+and <!--n:isl_gvi_cv_density-->0.01<!--/n--> for GVI. With one or two
+photos per cell, the slopes are well-estimated, but density predicts any
+single street view poorly. Residual Moran’s I remains positive (GVI
+<!--n:isl_gvi_moran-->0.12<!--/n-->), which is why SEs are clustered and
+CV holds out whole 2 km blocks.</p>
+<figure>
+<img src="figures/density_gvi.png"
+alt="Cell mean GVI against planned floor-area intensity, coloured by park share." />
+<figcaption aria-hidden="true">Cell mean GVI against planned floor-area
+intensity, coloured by park share.</figcaption>
+</figure>
+<p><strong>Softened-density candidates.</strong> These are
+top-quartile-intensity cells that are greener than predicted (Tier A:
+from density plus image-composition controls; Tier B: from density
+alone): <!--n:win_soft_n-->15<!--/n--> of
+<!--n:win_soft_hi-->28<!--/n--> in Tier A and
+<!--n:isl_soft_n-->110<!--/n--> of <!--n:isl_soft_hi-->467<!--/n--> in
+Tier B (the latter also requiring median-or-better sky view). They are
+listed for visual inspection as possible design precedents. They are not
+established precedents.</p>
+<p><strong>Survey power (simulated).</strong> With a scene-level SD of
+0.5 and 20 pairs per respondent, an effect of 0.35 logit per SD of GVI
+is detected with probability <!--n:power_e35_n50_s05-->96%<!--/n--> at
+50 respondents and <!--n:power_e35_n100_s05-->95%<!--/n--> at 100. At β
+= 0.2, power is <!--n:power_e20_n100_s05-->57%<!--/n--> at 100 and
+<!--n:power_e20_n200_s05-->66%<!--/n--> at 200 respondents. The
+false-positive rate under β = 0 is
+<!--n:power_e00_n100_s05-->1%<!--/n--> at 100 respondents. Power hardly
+grows with respondents. Scene-level appeal is shared by everyone, so
+with 40 scenes it is the binding constraint, and at a scene-level SD of
+1.0 even β = 0.35 reaches only <!--n:power_e35_n100_s10-->49%<!--/n-->
+at 100 respondents. The practical implication is to enlarge the stimulus
+set before recruiting more people. Simulating larger stimulus sets is
+the next step.</p>
+<figure>
+<img src="figures/power.png"
+alt="Simulated power of the planned two-stage analysis." />
+<figcaption aria-hidden="true">Simulated power of the planned two-stage
+analysis.</figcaption>
+</figure>
+<h2 id="limitations">5. Limitations</h2>
+<ul>
+<li><em>Coverage and selection.</em> Global Streetscapes covers one 2.4
+km window of Singapore. KartaView imagery is volunteered dashcam footage
+concentrated on roads, and the island-wide sample has at most two images
+per cell.</li>
+<li><em>Density measurement.</em> GPR is a planning control, not built
+floor area. The landed-housing GPR of 1.4 is an assumption. “EVA”
+parcels (schools, civic uses) are treated as zero.</li>
+<li><em>Confounding.</em> Park land, road hierarchy, capture year and
+camera all co-vary with density. The models are associational.</li>
+<li><em>Segmentation.</em> We used thumbnails rather than
+full-resolution images. Building share is model-dependent.</li>
+<li><em>Perception.</em> The dataset’s perception scores are model
+predictions trained on Place Pulse, not Singaporean respondents, and our
+survey has not been run.</li>
+</ul>
+<h2 id="ethics-note">6. Ethics note</h2>
+<p>No human-subject data were collected. Any deployment of the survey
+requires institutional ethics approval, informed consent and anonymous
+data handling (protocol §7). The demo page transmits nothing. Imagery is
+CC BY-SA 4.0 volunteered content. Survey stimuli are restricted to
+photos the platform reports as face/plate-blurred, and derived tables
+contain no images or personal data.</p>
+<h2 id="references">References</h2>
+<ul>
+<li>Hou Y, Quintana M, Khomiakov M, Yap W, Ouyang J, Ito K, Wang Z, Zhao
+T, Biljecki F (2024). Global Streetscapes — a comprehensive dataset of
+10 million street-level images across 688 cities for urban science and
+analytics. <em>ISPRS J. Photogramm. Remote Sens.</em> 215:216–238.</li>
+<li>Hunter DR (2004). MM algorithms for generalized Bradley–Terry
+models. <em>Annals of Statistics</em> 32(1):384–406.</li>
+<li>Herbrich R, Minka T, Graepel T (2007). TrueSkill: a Bayesian skill
+rating system. <em>NeurIPS 19</em>.</li>
+<li>Cheng B, Misra I, Schwing AG, Kirillov A, Girdhar R (2022).
+Masked-attention mask transformer for universal image segmentation.
+<em>CVPR</em>.</li>
+<li>Xie E, Wang W, Yu Z, Anandkumar A, Alvarez JM, Luo P (2021).
+SegFormer. <em>NeurIPS 34</em>.</li>
+<li>Lin LI (1989). A concordance correlation coefficient to evaluate
+reproducibility. <em>Biometrics</em> 45(1):255–268.</li>
+</ul>

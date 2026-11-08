@@ -32,6 +32,8 @@ MUTANTS = [
     ("ssd/pairwise.py", "(latent[i] - latent[j])", "(latent[j] - latent[i])"),
     ("ssd/pairwise.py", "hits += (p < alpha) and (b > 0)", "hits += (p < 0.5) and (b > 0)"),
     ("ssd/claims.py", "elif val != reg[key]:", "elif False:"),
+    ("ssd/sampling.py", "ids = sorted(image_ids)", "ids = list(image_ids)"),
+    ("ssd/sampling.py", "while k < len(order) and order[k] in done:", "while k < len(order):"),
     ("ssd/claims.py", 'r[f"agree_{k}_{pair}_ccc"] = f3(ag[k][pair]["ccc"])',
      'r[f"agree_{k}_{pair}_ccc"] = f3(ag[k][pair]["pearson_r"])'),
 ]
@@ -50,16 +52,17 @@ def main() -> int:
     survived, broken = [], []
     for n, (f, old, new) in enumerate(MUTANTS, 1):
         p = Path(f)
-        src = p.read_text(encoding="utf-8")
+        raw = p.read_bytes()                      # restore byte-for-byte afterwards
+        src = raw.decode("utf-8")
         if src.count(old) != 1:
             broken.append((n, f, old))
             print(f"[{n:02d}] CANNOT APPLY {f}: {old!r} occurs {src.count(old)}x")
             continue
         try:
-            p.write_text(src.replace(old, new), encoding="utf-8")
+            p.write_bytes(src.replace(old, new).encode("utf-8"))
             passed = run_tests()
         finally:
-            p.write_text(src, encoding="utf-8")
+            p.write_bytes(raw)
         print(f"[{n:02d}] {'SURVIVED' if passed else 'killed  '} {f}: {old!r} -> {new!r}", flush=True)
         if passed:
             survived.append(n)

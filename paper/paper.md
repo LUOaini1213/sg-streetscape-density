@@ -21,10 +21,12 @@ and how one would test whether greenery makes density feel less crowded.
   Singapore. We therefore also segmented an island-wide sample of
   <!--n:isl_images-->2,580<!--/n--> public KartaView photos.
 * **Density link.** Planned floor-area intensity from the URA Master Plan 2019
-  is associated with more building façade in view. In the dataset window it
-  is also associated with less greenery (mixed-model slope
-  <!--n:win_gvi_adjusted_b-->-0.080<!--/n--> GVI per unit log intensity).
-  Park land confounds this strongly.
+  is associated with more building façade in view and with less greenery.
+  The adjusted GVI slope per unit log intensity is
+  <!--n:win_gvi_adjusted_b-->-0.080<!--/n--> in the dataset window (mixed
+  model) and <!--n:isl_gvi_adjusted_b-->-0.060<!--/n--> island-wide. Park
+  land confounds this strongly, the window result depends on how images are
+  weighted, and density explains little held-out variance.
 * **Survey design.** We specify a pairwise-comparison survey with Bradley–Terry
   scoring and a simulated power analysis. No responses have been collected.
 
@@ -58,9 +60,10 @@ downloaded. KartaView images are public.
 1 km hexagonal lattice with a 500 m search radius. That returned
 <!--n:isl_api_photos-->12,804<!--/n--> unique photos. We kept those taken
 08:00–17:59 local time, in 2015 or later, and non-panoramic, then took at most
-two per 250 m cell from distinct sequences. Result:
-<!--n:isl_images-->2,580<!--/n--> photos in <!--n:isl_cells-->1,874<!--/n-->
-cells and <!--n:isl_pas-->53<!--/n--> planning areas.
+two per 250 m cell from distinct sequences, and downloaded
+<!--n:isl_downloaded-->2,580<!--/n-->, all of which were segmented
+(<!--n:isl_images-->2,580<!--/n--> photos in <!--n:isl_cells-->1,868<!--/n--> cells and
+<!--n:isl_pas-->53<!--/n--> planning areas).
 
 **Density proxies** come from data.gov.sg under the Singapore Open Data
 Licence:
@@ -158,34 +161,41 @@ not be pooled across models.
   r = <!--n:win_corr_park-->-0.69<!--/n-->.
 
 **Density, Tier B** (<!--n:isl_images-->2,580<!--/n--> images). The adjusted
-slopes are <!--n:isl_building_share_adjusted_b-->+0.000<!--/n-->
-<!--n:isl_building_share_adjusted_ci-->[+0.000, +0.000]<!--/n--> for building
-share, <!--n:isl_gvi_adjusted_b-->+0.000<!--/n-->
-<!--n:isl_gvi_adjusted_ci-->[+0.000, +0.000]<!--/n--> for GVI and
-<!--n:isl_svi_adjusted_b-->+0.000<!--/n-->
-<!--n:isl_svi_adjusted_ci-->[+0.000, +0.000]<!--/n--> for SVI. In blocked CV,
-density alone reaches R² <!--n:isl_building_share_cv_density-->0.00<!--/n-->
-for building share and <!--n:isl_gvi_cv_density-->0.00<!--/n--> for GVI.
+slopes are <!--n:isl_building_share_adjusted_b-->+0.068<!--/n-->
+<!--n:isl_building_share_adjusted_ci-->[+0.040, +0.096]<!--/n--> for building
+share, <!--n:isl_gvi_adjusted_b-->-0.060<!--/n-->
+<!--n:isl_gvi_adjusted_ci-->[-0.088, -0.032]<!--/n--> for GVI and
+<!--n:isl_svi_adjusted_b-->-0.015<!--/n-->
+<!--n:isl_svi_adjusted_ci-->[-0.052, +0.022]<!--/n--> for SVI. In blocked CV,
+density alone reaches R² <!--n:isl_building_share_cv_density-->0.11<!--/n-->
+for building share and <!--n:isl_gvi_cv_density-->0.01<!--/n--> for GVI.
+With one or two photos per cell, the slopes are well-estimated, but density
+predicts any single street view poorly. Residual Moran's I remains positive
+(GVI <!--n:isl_gvi_moran-->0.12<!--/n-->), which is why SEs are clustered and
+CV holds out whole 2 km blocks.
 
 ![Cell mean GVI against planned floor-area intensity, coloured by park share.](figures/density_gvi.png)
 
 **Softened-density candidates.** These are top-quartile-intensity cells that
 are greener than predicted (Tier A: from density plus image-composition
 controls; Tier B: from density alone): <!--n:win_soft_n-->15<!--/n--> of
-<!--n:win_soft_hi-->28<!--/n--> in Tier A and <!--n:isl_soft_n-->0<!--/n--> of
-<!--n:isl_soft_hi-->0<!--/n--> in Tier B (the latter also requiring
+<!--n:win_soft_hi-->28<!--/n--> in Tier A and <!--n:isl_soft_n-->110<!--/n--> of
+<!--n:isl_soft_hi-->467<!--/n--> in Tier B (the latter also requiring
 median-or-better sky view). They are listed for visual inspection as possible
 design precedents. They are not established precedents.
 
 **Survey power (simulated).** With a scene-level SD of 0.5 and 20 pairs per
 respondent, an effect of 0.35 logit per SD of GVI is detected with probability
-<!--n:power_e35_n50_s05-->0%<!--/n--> at 50 respondents and
-<!--n:power_e35_n100_s05-->0%<!--/n--> at 100. At β = 0.2, power is
-<!--n:power_e20_n100_s05-->0%<!--/n--> at 100 and
-<!--n:power_e20_n200_s05-->0%<!--/n--> at 200 respondents. The false-positive rate
-under β = 0 is <!--n:power_e00_n100_s05-->0%<!--/n--> at 100 respondents. Because
-scene-level appeal is shared by all respondents, power saturates with the
-number of scenes rather than growing without bound with respondents.
+<!--n:power_e35_n50_s05-->96%<!--/n--> at 50 respondents and
+<!--n:power_e35_n100_s05-->95%<!--/n--> at 100. At β = 0.2, power is
+<!--n:power_e20_n100_s05-->57%<!--/n--> at 100 and
+<!--n:power_e20_n200_s05-->66%<!--/n--> at 200 respondents. The false-positive rate
+under β = 0 is <!--n:power_e00_n100_s05-->1%<!--/n--> at 100 respondents. Power
+hardly grows with respondents. Scene-level appeal is shared by everyone, so
+with 40 scenes it is the binding constraint, and at a scene-level SD of 1.0
+even β = 0.35 reaches only <!--n:power_e35_n100_s10-->49%<!--/n--> at 100
+respondents. The practical implication is to enlarge the stimulus set before
+recruiting more people. Simulating larger stimulus sets is the next step.
 
 ![Simulated power of the planned two-stage analysis.](figures/power.png)
 

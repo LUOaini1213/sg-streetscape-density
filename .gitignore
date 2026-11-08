@@ -8,3 +8,4 @@ __pycache__/
 .pytest_cache/
 build/
 data/derived/points.parquet
+data/derived/*.log

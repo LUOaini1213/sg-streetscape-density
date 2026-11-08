@@ -37,6 +37,7 @@ def registry(root: Path) -> dict[str, str]:
         "agree_n": str(ag["n_images"]),
         "isl_api_photos": f"{kv['api_photos_unique']:,}",
         "isl_images": f"{isl['n_images']:,}",
+        "isl_downloaded": f"{isl['n_downloaded']:,}",
         "isl_cells": f"{isl['n_cells']:,}",
         "isl_pas": str(isl["n_planning_areas"]),
         "isl_blocks": str(isl["n_blocks"]),

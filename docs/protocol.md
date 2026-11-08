@@ -64,19 +64,31 @@ of scenes, not only by the number of respondents.
 
 | scene-level SD | β per SD of GVI | 25 | 50 | 100 | 200 respondents |
 |---|---|---|---|---|---|
-| 0.5 | 0 (false positives) | <!--n:power_e00_n25_s05-->0%<!--/n--> | <!--n:power_e00_n50_s05-->0%<!--/n--> | <!--n:power_e00_n100_s05-->0%<!--/n--> | <!--n:power_e00_n200_s05-->0%<!--/n--> |
-| 0.5 | 0.10 | <!--n:power_e10_n25_s05-->0%<!--/n--> | <!--n:power_e10_n50_s05-->0%<!--/n--> | <!--n:power_e10_n100_s05-->0%<!--/n--> | <!--n:power_e10_n200_s05-->0%<!--/n--> |
-| 0.5 | 0.20 | <!--n:power_e20_n25_s05-->0%<!--/n--> | <!--n:power_e20_n50_s05-->0%<!--/n--> | <!--n:power_e20_n100_s05-->0%<!--/n--> | <!--n:power_e20_n200_s05-->0%<!--/n--> |
-| 0.5 | 0.35 | <!--n:power_e35_n25_s05-->0%<!--/n--> | <!--n:power_e35_n50_s05-->0%<!--/n--> | <!--n:power_e35_n100_s05-->0%<!--/n--> | <!--n:power_e35_n200_s05-->0%<!--/n--> |
-| 1.0 | 0 (false positives) | <!--n:power_e00_n25_s10-->0%<!--/n--> | <!--n:power_e00_n50_s10-->0%<!--/n--> | <!--n:power_e00_n100_s10-->0%<!--/n--> | <!--n:power_e00_n200_s10-->0%<!--/n--> |
-| 1.0 | 0.10 | <!--n:power_e10_n25_s10-->0%<!--/n--> | <!--n:power_e10_n50_s10-->0%<!--/n--> | <!--n:power_e10_n100_s10-->0%<!--/n--> | <!--n:power_e10_n200_s10-->0%<!--/n--> |
-| 1.0 | 0.20 | <!--n:power_e20_n25_s10-->0%<!--/n--> | <!--n:power_e20_n50_s10-->0%<!--/n--> | <!--n:power_e20_n100_s10-->0%<!--/n--> | <!--n:power_e20_n200_s10-->0%<!--/n--> |
-| 1.0 | 0.35 | <!--n:power_e35_n25_s10-->0%<!--/n--> | <!--n:power_e35_n50_s10-->0%<!--/n--> | <!--n:power_e35_n100_s10-->0%<!--/n--> | <!--n:power_e35_n200_s10-->0%<!--/n--> |
+| 0.5 | 0 (false positives) | <!--n:power_e00_n25_s05-->1%<!--/n--> | <!--n:power_e00_n50_s05-->4%<!--/n--> | <!--n:power_e00_n100_s05-->1%<!--/n--> | <!--n:power_e00_n200_s05-->2%<!--/n--> |
+| 0.5 | 0.10 | <!--n:power_e10_n25_s05-->14%<!--/n--> | <!--n:power_e10_n50_s05-->20%<!--/n--> | <!--n:power_e10_n100_s05-->16%<!--/n--> | <!--n:power_e10_n200_s05-->26%<!--/n--> |
+| 0.5 | 0.20 | <!--n:power_e20_n25_s05-->45%<!--/n--> | <!--n:power_e20_n50_s05-->54%<!--/n--> | <!--n:power_e20_n100_s05-->57%<!--/n--> | <!--n:power_e20_n200_s05-->66%<!--/n--> |
+| 0.5 | 0.35 | <!--n:power_e35_n25_s05-->86%<!--/n--> | <!--n:power_e35_n50_s05-->96%<!--/n--> | <!--n:power_e35_n100_s05-->95%<!--/n--> | <!--n:power_e35_n200_s05-->99%<!--/n--> |
+| 1.0 | 0 (false positives) | <!--n:power_e00_n25_s10-->1%<!--/n--> | <!--n:power_e00_n50_s10-->1%<!--/n--> | <!--n:power_e00_n100_s10-->4%<!--/n--> | <!--n:power_e00_n200_s10-->2%<!--/n--> |
+| 1.0 | 0.10 | <!--n:power_e10_n25_s10-->6%<!--/n--> | <!--n:power_e10_n50_s10-->8%<!--/n--> | <!--n:power_e10_n100_s10-->10%<!--/n--> | <!--n:power_e10_n200_s10-->4%<!--/n--> |
+| 1.0 | 0.20 | <!--n:power_e20_n25_s10-->18%<!--/n--> | <!--n:power_e20_n50_s10-->24%<!--/n--> | <!--n:power_e20_n100_s10-->22%<!--/n--> | <!--n:power_e20_n200_s10-->24%<!--/n--> |
+| 1.0 | 0.35 | <!--n:power_e35_n25_s10-->52%<!--/n--> | <!--n:power_e35_n50_s10-->58%<!--/n--> | <!--n:power_e35_n100_s10-->49%<!--/n--> | <!--n:power_e35_n200_s10-->51%<!--/n--> |
 
-**Stopping rule (planned):** recruit 100 complete respondents, analyse once.
-Neither the effect size nor the scene-level SD is known, so the first step of
-a real study would be a small pilot (about 20 respondents) used *only* to
-re-estimate the scene-level SD and update this table, not to test H1–H3.
+**What the table shows.** Power barely grows beyond 25–50 respondents. With
+40 scenes, the scene-level term u_i, which every respondent shares, is the
+binding constraint, not respondent noise. A small effect (β = 0.1) is never
+reliably detectable with this stimulus set. At σ = 1.0, even β = 0.35 is
+roughly a coin flip.
+
+**Design decision (planned).** The lever is the number of scenes.
+
+* Before any confirmatory run, enlarge the stimulus set (each respondent
+  still sees 20 random pairs from it) and re-run this simulation for the
+  enlarged set. We have not yet simulated larger sets; that is the next
+  step.
+* A small pilot (about 20 respondents) would be used *only* to estimate σ,
+  not to test H1–H3.
+* The confirmatory sample size is then fixed in advance from the updated
+  table, and the data are analysed once.
 
 ## 6. Analysis plan
 
