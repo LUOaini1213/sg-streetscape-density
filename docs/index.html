@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Streetscape Density Singapore</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{--bg:#fafaf7;--fg:#1d1f1c;--muted:#5d625a;--line:#d9dbd3;--accent:#2f6f4f;--card:#fff}
+@media (prefers-color-scheme: dark){:root{--bg:#161815;--fg:#e8eae4;--muted:#a3a89e;--line:#3a3e37;--accent:#7cc4a0;--card:#20231f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1040px;margin:0 auto;padding:16px}
+h1{font-size:1.5rem;margin:.3rem 0}
+a{color:var(--accent)}
+.muted{color:var(--muted)}
+#map{height:520px;border:1px solid var(--line);border-radius:8px}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.links a{border:1px solid var(--line);border-radius:999px;padding:4px 12px;text-decoration:none;background:var(--card)}
+.legend{background:var(--card);color:var(--fg);padding:6px 8px;border-radius:6px;font-size:12px;line-height:1.4}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
+</style>
+</head>
+<body>
+<main>
+<h1>Street-level greenery, sky and built density in Singapore</h1>
+<p class="muted">Independent personal project by Wenjie Luo, not affiliated with the Singapore-ETH Centre or the NUS Urban Analytics Lab. Code MIT; derived data CC BY-SA 4.0.</p>
+<div class="links">
+<a href="https://github.com/LUOaini1213/sg-streetscape-density">Repository and README</a>
+<a href="paper.pdf">Write-up (PDF)</a>
+<a href="protocol.html">Survey protocol</a>
+<a href="survey/">Pairwise survey (demo, collects nothing)</a>
+</div>
+<p>Each dot is a 250 m grid cell with KartaView images that we segmented with Mask2Former (Mapillary Vistas). Colour = mean green view index; ringed dots = "softened density" candidates (top-quartile planned floor-area intensity, greener than density predicts, and at least median sky view). Click a dot for its values.</p>
+<div id="map" role="img" aria-label="Map of Singapore grid cells coloured by green view index"></div>
+<p class="muted" style="font-size:.8rem">Imagery-derived values: KartaView contributors, CC BY-SA 4.0. Density: URA Master Plan 2019 Land Use and HDB Existing Building (data.gov.sg, Singapore Open Data Licence v1.0). Basemap &copy; OpenStreetMap contributors.</p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function () {
+  var map = L.map('map', { scrollWheelZoom: false }).setView([1.352, 103.82], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18, attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+  var stops = [[0.1, '#f1efd8'], [0.25, '#c7e3b3'], [0.4, '#86c08a'], [0.55, '#3f8f5c'], [1.01, '#155233']];
+  function col(v) { for (var k = 0; k < stops.length; k++) if (v < stops[k][0]) return stops[k][1]; return stops[stops.length - 1][1]; }
+  fetch('data/island_cells.geojson').then(function (r) { return r.json(); }).then(function (g) {
+    L.geoJSON(g, {
+      pointToLayer: function (f, ll) {
+        var p = f.properties;
+        return L.circleMarker(ll, { radius: p.soft ? 6 : 4, color: p.soft ? '#b5651d' : '#555', weight: p.soft ? 2 : 0.4,
+                                    fillColor: col(p.gvi), fillOpacity: 0.9 });
+      },
+      onEachFeature: function (f, layer) {
+        var p = f.properties;
+        layer.bindPopup('<b>' + p.pa + '</b> (cell ' + p.cell + ')<br>GVI ' + p.gvi + ' · SVI ' + p.svi +
+                        ' · building ' + p.bld + '<br>GFA intensity ' + p.gfa + (p.soft ? '<br><i>softened-density candidate</i>' : ''));
+      }
+    }).addTo(map);
+  });
+  var lg = L.control({ position: 'bottomright' });
+  lg.onAdd = function () {
+    var d = L.DomUtil.create('div', 'legend');
+    var lab = ['< 0.10', '0.10–0.25', '0.25–0.40', '0.40–0.55', '≥ 0.55'];
+    d.innerHTML = '<b>Green view index</b><br>' + stops.map(function (s, k) { return '<i style="background:' + s[1] + '"></i>' + lab[k]; }).join('<br>') +
+                  '<br><i style="background:none;border:2px solid #b5651d"></i>softened candidate';
+    return d;
+  };
+  lg.addTo(map);
+})();
+</script>
+</body>
+</html>

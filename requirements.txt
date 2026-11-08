@@ -1,0 +1,9 @@
+# Full pipeline (data download, GPU segmentation, analysis, figures)
+-r requirements-ci.txt
+pyarrow==25.0.1
+duckdb==1.5.5
+requests==2.32.5
+pillow==12.3.0
+matplotlib==3.7.5
+torch==2.7.1        # CUDA 12.6 build used locally (GTX 1650, fp16)
+transformers==5.15.1

@@ -1,0 +1,9 @@
+{
+  "n_raw_bbox": 22327,
+  "n_points_on_land": 22327,
+  "n_kartaview": 9977,
+  "n_mapillary": 12350,
+  "n_cells_with_images": 113,
+  "n_kv_sample_candidates": 479,
+  "n_kv_sample": 479
+}

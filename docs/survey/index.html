@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Streetscape Pairwise Survey (demo)</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1d1f1c;--muted:#5d625a;--card:#ffffff;--line:#d9dbd3;--accent:#2f6f4f;--warn:#7a4f00;--warnbg:#fff6e0}
+@media (prefers-color-scheme: dark){:root{--bg:#161815;--fg:#e8eae4;--muted:#a3a89e;--card:#20231f;--line:#3a3e37;--accent:#7cc4a0;--warn:#f3c56b;--warnbg:#2d2614}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1040px;margin:0 auto;padding:16px}
+h1{font-size:1.4rem;margin:.4rem 0}
+.muted{color:var(--muted)}
+a{color:var(--accent)}
+.notice{background:var(--warnbg);color:var(--warn);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:12px 0}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+@media (max-width:640px){.pair{grid-template-columns:1fr}}
+.opt{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:6px;cursor:pointer;text-align:left;color:var(--fg);font:inherit}
+.opt:hover,.opt:focus{border-color:var(--accent);outline:none}
+.opt img{width:100%;height:auto;display:block;border-radius:6px;aspect-ratio:16/9;object-fit:cover}
+.opt small{display:block;color:var(--muted);margin-top:4px;font-size:.75rem}
+button.primary{background:var(--accent);color:var(--bg);border:0;border-radius:8px;padding:10px 16px;font:inherit;cursor:pointer}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar>div{height:100%;background:var(--accent);width:0}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin-top:12px}
+td,th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<main>
+<h1>Which street feels less crowded?</h1>
+<p class="muted">Pairwise-comparison instrument for the <a href="../">sg-streetscape-density</a> project. Independent personal project, not affiliated with the Singapore-ETH Centre or the NUS Urban Analytics Lab.</p>
+<div class="notice"><strong>Demo only.</strong> This page sends nothing anywhere and no study is running. Your choices stay in this browser tab. At the end you can see a Bradley&ndash;Terry ranking computed in the page and download your own answers as JSON. A real pilot would need ethics approval first (see the <a href="../protocol.html">protocol</a>).</div>
+
+<section id="intro">
+<p>You will see <span id="ntrials">20</span> pairs of street scenes from Singapore (KartaView photos, CC BY-SA 4.0). For each pair, click the scene that <strong>feels less crowded</strong>. Go with your first impression.</p>
+<button class="primary" id="start">Start demo</button>
+</section>
+
+<section id="task" class="hidden">
+<div class="bar"><div id="prog"></div></div>
+<p class="muted" id="counter"></p>
+<div class="pair">
+<button class="opt" id="optA"><img id="imgA" alt="Street scene A"><small id="capA"></small></button>
+<button class="opt" id="optB"><img id="imgB" alt="Street scene B"><small id="capB"></small></button>
+</div>
+<p class="muted">Keyboard: left arrow = left scene, right arrow = right scene.</p>
+</section>
+
+<section id="done" class="hidden">
+<h2>Demo complete</h2>
+<p>Bradley&ndash;Terry scores from your choices only (higher = chosen as less crowded more often). With one respondent these are very noisy; the protocol pools many respondents. <span id="consist"></span></p>
+<button class="primary" id="dl">Download my answers (JSON)</button>
+<table id="tbl"><thead><tr><th>Scene</th><th>BT score</th><th>shown</th><th>chosen</th></tr></thead><tbody></tbody></table>
+</section>
+<p class="muted" style="margin-top:24px;font-size:.8rem">Photos: KartaView contributors, CC BY-SA 4.0, resized to 640 px. Each caption gives the KartaView sequence id; full attribution in <a href="stimuli.json">stimuli.json</a>.</p>
+</main>
+<script>
+(function () {
+  var N_TRIALS = 20;
+  var stim = [], trials = [], answers = [], t = 0, repeatAt = -1, repeatOf = -1;
+  function $(id) { return document.getElementById(id); }
+  function rng(seed) {
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      var x = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x;
+      return ((x ^ x >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function shuffle(a, r) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var tmp = a[i]; a[i] = a[j]; a[j] = tmp; }
+    return a;
+  }
+  function makeTrials() {
+    var r = rng(Date.now() % 2147483647);
+    var idx = shuffle(stim.map(function (_, k) { return k; }), r);
+    var out = [];
+    for (var k = 0; out.length < N_TRIALS - 1; k++) {
+      var a = idx[(2 * k) % idx.length], b = idx[(2 * k + 1) % idx.length];
+      if (a !== b) out.push(r() < 0.5 ? [a, b] : [b, a]);
+    }
+    // one repeated pair with sides swapped = within-respondent consistency check
+    repeatOf = 3; repeatAt = 15;
+    out.splice(repeatAt, 0, [out[repeatOf][1], out[repeatOf][0]]);
+    return out;
+  }
+  function cap(s) { return s.planning_area + ' · KartaView seq ' + s.kartaview_sequence; }
+  function show() {
+    var a = trials[t][0], b = trials[t][1];
+    $('imgA').src = stim[a].file; $('imgB').src = stim[b].file;
+    $('capA').textContent = cap(stim[a]); $('capB').textContent = cap(stim[b]);
+    $('counter').textContent = 'Pair ' + (t + 1) + ' of ' + trials.length;
+    $('prog').style.width = (100 * t / trials.length) + '%';
+  }
+  function choose(side) {
+    var a = trials[t][0], b = trials[t][1];
+    answers.push({ trial: t, left: stim[a].id, right: stim[b].id, chosen: side === 0 ? stim[a].id : stim[b].id,
+                   ms: Math.round(performance.now()) });
+    t++;
+    if (t < trials.length) show(); else finish();
+  }
+  // Bradley-Terry via Hunter's MM, 0.5 virtual win and loss against a unit-strength reference
+  function bt(n, comps) {
+    var wins = [], p = [], k;
+    for (k = 0; k < n; k++) { wins.push(0.5); p.push(1); }
+    comps.forEach(function (c) { wins[c.w] += 1; });
+    for (var it = 0; it < 300; it++) {
+      var den = p.map(function (pi) { return 1 / (pi + 1); });
+      comps.forEach(function (c) { var s = 1 / (p[c.i] + p[c.j]); den[c.i] += s; den[c.j] += s; });
+      var np = wins.map(function (w, q) { return w / den[q]; });
+      var lg = np.reduce(function (acc, v) { return acc + Math.log(v); }, 0) / n;
+      for (k = 0; k < n; k++) p[k] = np[k] / Math.exp(lg);
+    }
+    return p.map(Math.log);
+  }
+  function finish() {
+    $('task').classList.add('hidden'); $('done').classList.remove('hidden');
+    var id2k = {}; stim.forEach(function (s, k) { id2k[s.id] = k; });
+    var comps = answers.map(function (a) { return { i: id2k[a.left], j: id2k[a.right], w: id2k[a.chosen] }; });
+    var s = bt(stim.length, comps);
+    var shown = stim.map(function () { return 0; }), won = stim.map(function () { return 0; });
+    comps.forEach(function (c) { shown[c.i]++; shown[c.j]++; won[c.w]++; });
+    var same = answers[repeatOf].chosen === answers[repeatAt].chosen;
+    $('consist').textContent = 'Repeated pair answered ' + (same ? 'consistently.' : 'inconsistently.');
+    var rows = stim.map(function (x, k) { return { x: x, k: k }; })
+      .filter(function (o) { return shown[o.k] > 0; })
+      .sort(function (u, v) { return s[v.k] - s[u.k]; });
+    var tb = $('tbl').querySelector('tbody');
+    tb.innerHTML = '';
+    rows.forEach(function (o) {
+      var tr = document.createElement('tr');
+      [o.x.id + ' (' + o.x.planning_area + ')', s[o.k].toFixed(2), shown[o.k], won[o.k]].forEach(function (v) {
+        var td = document.createElement('td'); td.textContent = v; tr.appendChild(td);
+      });
+      tb.appendChild(tr);
+    });
+  }
+  $('dl').onclick = function () {
+    var payload = { instrument: 'sg-streetscape-density pairwise v0.1 (demo)', question: 'feels less crowded',
+                    repeated_pair: [repeatOf, repeatAt], answers: answers };
+    var blob = new Blob([JSON.stringify(payload, null, 1)], { type: 'application/json' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'my_answers_demo.json'; a.click();
+  };
+  $('optA').onclick = function () { choose(0); };
+  $('optB').onclick = function () { choose(1); };
+  document.addEventListener('keydown', function (e) {
+    if ($('task').classList.contains('hidden')) return;
+    if (e.key === 'ArrowLeft') choose(0);
+    if (e.key === 'ArrowRight') choose(1);
+  });
+  $('start').onclick = function () { $('intro').classList.add('hidden'); $('task').classList.remove('hidden'); show(); };
+  fetch('stimuli.json').then(function (r) { return r.json(); }).then(function (d) {
+    stim = d; trials = makeTrials(); $('ntrials').textContent = trials.length;
+  }).catch(function () { $('intro').innerHTML = '<p>Could not load stimuli.json.</p>'; });
+})();
+</script>
+</body>
+</html>

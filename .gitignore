@@ -1,0 +1,10 @@
+data/raw/
+data/images/
+data/seg/
+data/derived/mp19_landuse.parquet
+data/derived/hdb_existing_building.parquet
+__pycache__/
+*.pyc
+.pytest_cache/
+build/
+data/derived/points.parquet
