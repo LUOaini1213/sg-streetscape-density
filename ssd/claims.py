@@ -72,7 +72,7 @@ def registry(root: Path) -> dict[str, str]:
         r[f"isl_{k}_moran"] = f2(isl["cell_ols"][k]["resid_moran_i"])
     g = pd.DataFrame(pw["grid"])
     for row in g.itertuples():
-        r[f"power_e{int(round(row.effect * 100)):02d}_n{row.raters}"] = pct(row.power)
+        r[f"power_e{int(round(row.effect * 100)):02d}_n{row.raters}_s{int(round(row.item_sd * 10)):02d}"] =             pct(row.power)
     return r
 
 

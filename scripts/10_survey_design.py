@@ -22,10 +22,10 @@ from ssd.pairwise import bradley_terry, simulate, slope_test
 
 N_STIMULI = 40
 SEED = 11
-EFFECTS = [0.0, 0.2, 0.35, 0.5]      # logit change in P(chosen as 'less crowded') per SD of GVI
+EFFECTS = [0.0, 0.1, 0.2, 0.35]      # logit change in P(chosen as 'less crowded') per SD of GVI
 RATERS = [25, 50, 100, 200]
 PAIRS_PER_RATER = 20
-ITEM_SD = 0.5                          # unexplained scene-level appeal (logit SD)
+ITEM_SDS = [0.5, 1.0]                  # unexplained scene-level appeal (logit SD)
 RATER_SD = 0.3
 N_SIMS = 200
 
@@ -46,20 +46,21 @@ def power_grid(gvi: np.ndarray, dens: np.ndarray, rng_seed: int) -> list[dict]:
     zd = (dens - dens.mean()) / dens.std()
     out = []
     rng = np.random.default_rng(rng_seed)
-    for eff in EFFECTS:
-        for n in RATERS:
-            hits = 0
-            for _ in range(N_SIMS):
-                # pre-registered generative model: density makes scenes feel more crowded,
-                # greenery less; plus unexplained scene appeal and rater heterogeneity
-                latent = eff * zg - 0.3 * zd + rng.normal(0, ITEM_SD, len(zg))
-                comp = simulate(latent, n, PAIRS_PER_RATER, rng, RATER_SD)
-                s = bradley_terry(comp, len(zg))
-                b, p = slope_test(s, gvi, covars=zd[:, None])
-                hits += (p < 0.05) and (b > 0)
-            out.append({"effect": eff, "raters": n, "pairs_per_rater": PAIRS_PER_RATER,
-                        "power": hits / N_SIMS})
-            print(out[-1], flush=True)
+    for item_sd in ITEM_SDS:
+        for eff in EFFECTS:
+            for n in RATERS:
+                hits = 0
+                for _ in range(N_SIMS):
+                    # pre-registered generative model: density makes scenes feel more crowded,
+                    # greenery less; plus unexplained scene appeal and rater heterogeneity
+                    latent = eff * zg - 0.3 * zd + rng.normal(0, item_sd, len(zg))
+                    comp = simulate(latent, n, PAIRS_PER_RATER, rng, RATER_SD)
+                    s = bradley_terry(comp, len(zg))
+                    b, p = slope_test(s, gvi, covars=zd[:, None])
+                    hits += (p < 0.05) and (b > 0)
+                out.append({"effect": eff, "item_sd": item_sd, "raters": n,
+                            "pairs_per_rater": PAIRS_PER_RATER, "power": hits / N_SIMS})
+                print(out[-1], flush=True)
     return out
 
 
@@ -93,7 +94,7 @@ def main() -> None:
     dens = np.log1p(np.array([i["gfa_intensity"] for i in items]))
     grid = power_grid(gvi, dens, SEED)
     res = {"n_stimuli": len(items), "corr_gvi_logdensity_stimuli": float(np.corrcoef(gvi, dens)[0, 1]),
-           "item_sd": ITEM_SD, "rater_sd": RATER_SD, "n_sims": N_SIMS, "grid": grid}
+           "item_sds": ITEM_SDS, "rater_sd": RATER_SD, "n_sims": N_SIMS, "grid": grid}
     Path("outputs/power.json").write_text(json.dumps(res, indent=2))
 
 

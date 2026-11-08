@@ -55,19 +55,23 @@ repository (README, Tier A and Tier B) can only show as association.
 ## 5. Sample size (simulation-based power)
 
 Generative model for the simulation: latent utility of scene *i* =
-β·z(GVI_i) − 0.3·z(density_i) + u_i, with u_i ~ N(0, 0.5²) for scene-level
-appeal not explained by GVI or density, rater discrimination
+β·z(GVI_i) − 0.3·z(density_i) + u_i, with u_i ~ N(0, σ²) for scene-level
+appeal not explained by GVI or density (σ = 0.5 or 1.0), rater discrimination
 1 + N(0, 0.3²), Bradley–Terry choice probabilities, 200 simulated studies per
 cell. The analysis replicated in each simulated study is exactly the planned
 one (§6). The scene-level term u_i means that power is capped by the number
 of scenes, not only by the number of respondents.
 
-| β (logit per SD of GVI) | 25 respondents | 50 | 100 | 200 |
-|---|---|---|---|---|
-| 0 (false-positive rate) | <!--n:power_e00_n25-->0%<!--/n--> | <!--n:power_e00_n50-->0%<!--/n--> | <!--n:power_e00_n100-->0%<!--/n--> | <!--n:power_e00_n200-->0%<!--/n--> |
-| 0.20 | <!--n:power_e20_n25-->0%<!--/n--> | <!--n:power_e20_n50-->0%<!--/n--> | <!--n:power_e20_n100-->0%<!--/n--> | <!--n:power_e20_n200-->0%<!--/n--> |
-| 0.35 | <!--n:power_e35_n25-->0%<!--/n--> | <!--n:power_e35_n50-->0%<!--/n--> | <!--n:power_e35_n100-->0%<!--/n--> | <!--n:power_e35_n200-->0%<!--/n--> |
-| 0.50 | <!--n:power_e50_n25-->0%<!--/n--> | <!--n:power_e50_n50-->0%<!--/n--> | <!--n:power_e50_n100-->0%<!--/n--> | <!--n:power_e50_n200-->0%<!--/n--> |
+| scene-level SD | β per SD of GVI | 25 | 50 | 100 | 200 respondents |
+|---|---|---|---|---|---|
+| 0.5 | 0 (false positives) | <!--n:power_e00_n25_s05-->0%<!--/n--> | <!--n:power_e00_n50_s05-->0%<!--/n--> | <!--n:power_e00_n100_s05-->0%<!--/n--> | <!--n:power_e00_n200_s05-->0%<!--/n--> |
+| 0.5 | 0.10 | <!--n:power_e10_n25_s05-->0%<!--/n--> | <!--n:power_e10_n50_s05-->0%<!--/n--> | <!--n:power_e10_n100_s05-->0%<!--/n--> | <!--n:power_e10_n200_s05-->0%<!--/n--> |
+| 0.5 | 0.20 | <!--n:power_e20_n25_s05-->0%<!--/n--> | <!--n:power_e20_n50_s05-->0%<!--/n--> | <!--n:power_e20_n100_s05-->0%<!--/n--> | <!--n:power_e20_n200_s05-->0%<!--/n--> |
+| 0.5 | 0.35 | <!--n:power_e35_n25_s05-->0%<!--/n--> | <!--n:power_e35_n50_s05-->0%<!--/n--> | <!--n:power_e35_n100_s05-->0%<!--/n--> | <!--n:power_e35_n200_s05-->0%<!--/n--> |
+| 1.0 | 0 (false positives) | <!--n:power_e00_n25_s10-->0%<!--/n--> | <!--n:power_e00_n50_s10-->0%<!--/n--> | <!--n:power_e00_n100_s10-->0%<!--/n--> | <!--n:power_e00_n200_s10-->0%<!--/n--> |
+| 1.0 | 0.10 | <!--n:power_e10_n25_s10-->0%<!--/n--> | <!--n:power_e10_n50_s10-->0%<!--/n--> | <!--n:power_e10_n100_s10-->0%<!--/n--> | <!--n:power_e10_n200_s10-->0%<!--/n--> |
+| 1.0 | 0.20 | <!--n:power_e20_n25_s10-->0%<!--/n--> | <!--n:power_e20_n50_s10-->0%<!--/n--> | <!--n:power_e20_n100_s10-->0%<!--/n--> | <!--n:power_e20_n200_s10-->0%<!--/n--> |
+| 1.0 | 0.35 | <!--n:power_e35_n25_s10-->0%<!--/n--> | <!--n:power_e35_n50_s10-->0%<!--/n--> | <!--n:power_e35_n100_s10-->0%<!--/n--> | <!--n:power_e35_n200_s10-->0%<!--/n--> |
 
 **Stopping rule (planned):** recruit 100 complete respondents, analyse once.
 Neither the effect size nor the scene-level SD is known, so the first step of

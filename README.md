@@ -172,8 +172,10 @@ What the density results say, and where confounding enters:
   maximum, so it overstates built intensity where sites are under-built.
 
 **"Softened density" candidates** are cells in the top quartile of GFA
-intensity whose GVI is above what density alone predicts. For Tier B we also
-require SVI at or above the high-density median.
+intensity whose GVI is above what density predicts. In Tier A the prediction
+also uses the image-composition controls (platform, source, side view, major
+road). In Tier B it uses density alone, and we also require SVI at or above
+the high-density median.
 
 * Tier A: <!--n:win_soft_n-->15<!--/n--> of <!--n:win_soft_hi-->28<!--/n-->
   high-density cells qualify.
@@ -194,14 +196,20 @@ precedents.
   implemented in `ssd/pairwise.py`, tested on simulated respondents, and
   recover the simulated utilities (tests).
 * Power was simulated for the planned two-stage analysis (BT scores → OLS on
-  z(GVI) + z(density)), with a scene-level SD of 0.5:
+  z(GVI) + z(density)), at two levels of scene-level appeal not explained by
+  GVI or density (SD 0.5 and 1.0 on the logit scale), 200 simulated studies
+  per cell:
 
-| β per SD of GVI | 25 | 50 | 100 | 200 respondents |
-|---|---|---|---|---|
-| 0 (false positives) | <!--n:power_e00_n25-->0%<!--/n--> | <!--n:power_e00_n50-->0%<!--/n--> | <!--n:power_e00_n100-->0%<!--/n--> | <!--n:power_e00_n200-->0%<!--/n--> |
-| 0.20 | <!--n:power_e20_n25-->0%<!--/n--> | <!--n:power_e20_n50-->0%<!--/n--> | <!--n:power_e20_n100-->0%<!--/n--> | <!--n:power_e20_n200-->0%<!--/n--> |
-| 0.35 | <!--n:power_e35_n25-->0%<!--/n--> | <!--n:power_e35_n50-->0%<!--/n--> | <!--n:power_e35_n100-->0%<!--/n--> | <!--n:power_e35_n200-->0%<!--/n--> |
-| 0.50 | <!--n:power_e50_n25-->0%<!--/n--> | <!--n:power_e50_n50-->0%<!--/n--> | <!--n:power_e50_n100-->0%<!--/n--> | <!--n:power_e50_n200-->0%<!--/n--> |
+| scene-level SD | β per SD of GVI | 25 | 50 | 100 | 200 respondents |
+|---|---|---|---|---|---|
+| 0.5 | 0 (false positives) | <!--n:power_e00_n25_s05-->0%<!--/n--> | <!--n:power_e00_n50_s05-->0%<!--/n--> | <!--n:power_e00_n100_s05-->0%<!--/n--> | <!--n:power_e00_n200_s05-->0%<!--/n--> |
+| 0.5 | 0.10 | <!--n:power_e10_n25_s05-->0%<!--/n--> | <!--n:power_e10_n50_s05-->0%<!--/n--> | <!--n:power_e10_n100_s05-->0%<!--/n--> | <!--n:power_e10_n200_s05-->0%<!--/n--> |
+| 0.5 | 0.20 | <!--n:power_e20_n25_s05-->0%<!--/n--> | <!--n:power_e20_n50_s05-->0%<!--/n--> | <!--n:power_e20_n100_s05-->0%<!--/n--> | <!--n:power_e20_n200_s05-->0%<!--/n--> |
+| 0.5 | 0.35 | <!--n:power_e35_n25_s05-->0%<!--/n--> | <!--n:power_e35_n50_s05-->0%<!--/n--> | <!--n:power_e35_n100_s05-->0%<!--/n--> | <!--n:power_e35_n200_s05-->0%<!--/n--> |
+| 1.0 | 0 (false positives) | <!--n:power_e00_n25_s10-->0%<!--/n--> | <!--n:power_e00_n50_s10-->0%<!--/n--> | <!--n:power_e00_n100_s10-->0%<!--/n--> | <!--n:power_e00_n200_s10-->0%<!--/n--> |
+| 1.0 | 0.10 | <!--n:power_e10_n25_s10-->0%<!--/n--> | <!--n:power_e10_n50_s10-->0%<!--/n--> | <!--n:power_e10_n100_s10-->0%<!--/n--> | <!--n:power_e10_n200_s10-->0%<!--/n--> |
+| 1.0 | 0.20 | <!--n:power_e20_n25_s10-->0%<!--/n--> | <!--n:power_e20_n50_s10-->0%<!--/n--> | <!--n:power_e20_n100_s10-->0%<!--/n--> | <!--n:power_e20_n200_s10-->0%<!--/n--> |
+| 1.0 | 0.35 | <!--n:power_e35_n25_s10-->0%<!--/n--> | <!--n:power_e35_n50_s10-->0%<!--/n--> | <!--n:power_e35_n100_s10-->0%<!--/n--> | <!--n:power_e35_n200_s10-->0%<!--/n--> |
 
 ![power](figures/power.png)
 

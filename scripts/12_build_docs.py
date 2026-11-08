@@ -7,7 +7,7 @@ import re
 import subprocess
 from pathlib import Path
 
-import fitz  # PyMuPDF
+import pymupdf as fitz
 
 CSS = """
 body { font-family: serif; font-size: 10pt; line-height: 1.35; }

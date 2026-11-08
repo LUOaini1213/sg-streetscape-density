@@ -22,14 +22,17 @@ def simulate(latent: np.ndarray, n_raters: int, pairs_per_rater: int, rng: np.ra
     Returns int array of shape (n, 4): rater, i, j, y.
     """
     k = len(latent)
-    out = []
-    for r in range(n_raters):
-        disc = max(0.05, 1.0 + rng.normal(0, rater_sd)) if rater_sd > 0 else 1.0
-        for _ in range(pairs_per_rater):
-            i, j = rng.choice(k, size=2, replace=False)
-            p = 1.0 / (1.0 + math.exp(-disc * (latent[i] - latent[j])))
-            out.append((r, i, j, int(rng.random() < p)))
-    return np.array(out, dtype=np.int64)
+    latent = np.asarray(latent, float)
+    n = n_raters * pairs_per_rater
+    rater = np.repeat(np.arange(n_raters), pairs_per_rater)
+    i = rng.integers(0, k, n)
+    j = (i + rng.integers(1, k, n)) % k          # j != i, uniform over the other items
+    disc = np.ones(n_raters)
+    if rater_sd > 0:
+        disc = np.maximum(0.05, 1.0 + rng.normal(0, rater_sd, n_raters))
+    p = 1.0 / (1.0 + np.exp(-disc[rater] * (latent[i] - latent[j])))
+    y = (rng.random(n) < p).astype(np.int64)
+    return np.column_stack([rater, i, j, y]).astype(np.int64)
 
 
 # ---------------------------------------------------------------- Bradley-Terry (MM)

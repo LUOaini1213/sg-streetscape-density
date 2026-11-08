@@ -54,15 +54,19 @@ def density_fig():
 def power_fig():
     p = json.loads(Path("outputs/power.json").read_text())
     g = pd.DataFrame(p["grid"])
-    fig, ax = plt.subplots(figsize=(4.6, 3.1))
-    for eff, col in zip(sorted(g.effect.unique()), ["#9aa093", "#7fb59a", A, "#173b2a"]):
-        s = g[g.effect == eff]
-        ax.plot(s.raters, s.power, marker="o", color=col, label=f"beta = {eff}")
-    ax.axhline(.8, color=MUTED, lw=.8, ls="--")
-    ax.set_xscale("log"), ax.set_xticks(sorted(g.raters.unique()), [str(x) for x in sorted(g.raters.unique())])
-    ax.set_xlabel("respondents (20 pairs each)"), ax.set_ylabel("simulated power")
-    ax.set_title(f"{p['n_stimuli']} scenes, scene-level SD {p['item_sd']}", fontsize=9)
-    ax.legend(frameon=False, fontsize=7)
+    fig, axs = plt.subplots(1, 2, figsize=(8, 3.1), sharey=True)
+    for ax, sd in zip(axs, sorted(g.item_sd.unique())):
+        for eff, col in zip(sorted(g.effect.unique()), ["#9aa093", "#7fb59a", A, "#173b2a"]):
+            s = g[(g.effect == eff) & (g.item_sd == sd)]
+            ax.plot(s.raters, s.power, marker="o", color=col, label=f"beta = {eff}")
+        ax.axhline(.8, color=MUTED, lw=.8, ls="--")
+        ax.set_xscale("log")
+        ax.set_xticks(sorted(g.raters.unique()), [str(x) for x in sorted(g.raters.unique())])
+        ax.minorticks_off()
+        ax.set_xlabel("respondents (20 pairs each)")
+        ax.set_title(f"{p['n_stimuli']} scenes, scene-level SD {sd}", fontsize=9)
+    axs[0].set_ylabel("simulated power")
+    axs[0].legend(frameon=False, fontsize=7)
     fig.tight_layout()
     fig.savefig(FIG / "power.png", dpi=150)
 

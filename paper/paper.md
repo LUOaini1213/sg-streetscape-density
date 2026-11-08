@@ -170,7 +170,8 @@ for building share and <!--n:isl_gvi_cv_density-->0.00<!--/n--> for GVI.
 ![Cell mean GVI against planned floor-area intensity, coloured by park share.](figures/density_gvi.png)
 
 **Softened-density candidates.** These are top-quartile-intensity cells that
-are greener than density predicts: <!--n:win_soft_n-->15<!--/n--> of
+are greener than predicted (Tier A: from density plus image-composition
+controls; Tier B: from density alone): <!--n:win_soft_n-->15<!--/n--> of
 <!--n:win_soft_hi-->28<!--/n--> in Tier A and <!--n:isl_soft_n-->0<!--/n--> of
 <!--n:isl_soft_hi-->0<!--/n--> in Tier B (the latter also requiring
 median-or-better sky view). They are listed for visual inspection as possible
@@ -178,11 +179,11 @@ design precedents. They are not established precedents.
 
 **Survey power (simulated).** With a scene-level SD of 0.5 and 20 pairs per
 respondent, an effect of 0.35 logit per SD of GVI is detected with probability
-<!--n:power_e35_n50-->0%<!--/n--> at 50 respondents and
-<!--n:power_e35_n100-->0%<!--/n--> at 100. At β = 0.2, power is
-<!--n:power_e20_n100-->0%<!--/n--> at 100 and
-<!--n:power_e20_n200-->0%<!--/n--> at 200 respondents. The false-positive rate
-under β = 0 is <!--n:power_e00_n100-->0%<!--/n--> at 100 respondents. Because
+<!--n:power_e35_n50_s05-->0%<!--/n--> at 50 respondents and
+<!--n:power_e35_n100_s05-->0%<!--/n--> at 100. At β = 0.2, power is
+<!--n:power_e20_n100_s05-->0%<!--/n--> at 100 and
+<!--n:power_e20_n200_s05-->0%<!--/n--> at 200 respondents. The false-positive rate
+under β = 0 is <!--n:power_e00_n100_s05-->0%<!--/n--> at 100 respondents. Because
 scene-level appeal is shared by all respondents, power saturates with the
 number of scenes rather than growing without bound with respondents.
 
